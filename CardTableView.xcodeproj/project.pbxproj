@@ -13,6 +13,9 @@
 		A3BF5C8E1ADE1E4A0056E742 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A3BF5C8D1ADE1E4A0056E742 /* Images.xcassets */; };
 		A3BF5C911ADE1E4A0056E742 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = A3BF5C8F1ADE1E4A0056E742 /* LaunchScreen.xib */; };
 		A3BF5C9D1ADE1E4A0056E742 /* CardTableViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BF5C9C1ADE1E4A0056E742 /* CardTableViewTests.swift */; };
+		A3BF5CA71ADE20AA0056E742 /* LZCardTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BF5CA61ADE20AA0056E742 /* LZCardTableView.swift */; };
+		A3BF5CA91ADE21D20056E742 /* LZCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BF5CA81ADE21D20056E742 /* LZCardView.swift */; };
+		A3BF5CAB1AE209770056E742 /* UIView+Animation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BF5CAA1AE209770056E742 /* UIView+Animation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +39,9 @@
 		A3BF5C961ADE1E4A0056E742 /* CardTableViewTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CardTableViewTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A3BF5C9B1ADE1E4A0056E742 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A3BF5C9C1ADE1E4A0056E742 /* CardTableViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTableViewTests.swift; sourceTree = "<group>"; };
+		A3BF5CA61ADE20AA0056E742 /* LZCardTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LZCardTableView.swift; sourceTree = "<group>"; };
+		A3BF5CA81ADE21D20056E742 /* LZCardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LZCardView.swift; sourceTree = "<group>"; };
+		A3BF5CAA1AE209770056E742 /* UIView+Animation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Animation.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +85,9 @@
 			children = (
 				A3BF5C861ADE1E4A0056E742 /* AppDelegate.swift */,
 				A3BF5C881ADE1E4A0056E742 /* ViewController.swift */,
+				A3BF5CA61ADE20AA0056E742 /* LZCardTableView.swift */,
+				A3BF5CA81ADE21D20056E742 /* LZCardView.swift */,
+				A3BF5CAA1AE209770056E742 /* UIView+Animation.swift */,
 				A3BF5C8A1ADE1E4A0056E742 /* Main.storyboard */,
 				A3BF5C8D1ADE1E4A0056E742 /* Images.xcassets */,
 				A3BF5C8F1ADE1E4A0056E742 /* LaunchScreen.xib */,
@@ -213,6 +222,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				A3BF5C891ADE1E4A0056E742 /* ViewController.swift in Sources */,
+				A3BF5CA71ADE20AA0056E742 /* LZCardTableView.swift in Sources */,
+				A3BF5CAB1AE209770056E742 /* UIView+Animation.swift in Sources */,
+				A3BF5CA91ADE21D20056E742 /* LZCardView.swift in Sources */,
 				A3BF5C871ADE1E4A0056E742 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -342,9 +354,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = CardTableView/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -352,7 +367,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = CardTableView/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -411,6 +428,7 @@
 				A3BF5CA21ADE1E4A0056E742 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		A3BF5CA31ADE1E4A0056E742 /* Build configuration list for PBXNativeTarget "CardTableViewTests" */ = {
 			isa = XCConfigurationList;
@@ -419,6 +437,7 @@
 				A3BF5CA51ADE1E4A0056E742 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
