@@ -7,14 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A370F83F1AE31E84005977CF /* PageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A370F83E1AE31E84005977CF /* PageViewController.swift */; };
+		A370F8471AE32239005977CF /* LZCardTransitionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A370F8461AE32239005977CF /* LZCardTransitionManager.swift */; };
 		A3BF5C871ADE1E4A0056E742 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BF5C861ADE1E4A0056E742 /* AppDelegate.swift */; };
-		A3BF5C891ADE1E4A0056E742 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BF5C881ADE1E4A0056E742 /* ViewController.swift */; };
+		A3BF5C891ADE1E4A0056E742 /* LZCardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BF5C881ADE1E4A0056E742 /* LZCardViewController.swift */; };
 		A3BF5C8C1ADE1E4A0056E742 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A3BF5C8A1ADE1E4A0056E742 /* Main.storyboard */; };
 		A3BF5C8E1ADE1E4A0056E742 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A3BF5C8D1ADE1E4A0056E742 /* Images.xcassets */; };
 		A3BF5C911ADE1E4A0056E742 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = A3BF5C8F1ADE1E4A0056E742 /* LaunchScreen.xib */; };
 		A3BF5C9D1ADE1E4A0056E742 /* CardTableViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BF5C9C1ADE1E4A0056E742 /* CardTableViewTests.swift */; };
-		A3BF5CA71ADE20AA0056E742 /* LZCardTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BF5CA61ADE20AA0056E742 /* LZCardTableView.swift */; };
-		A3BF5CA91ADE21D20056E742 /* LZCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BF5CA81ADE21D20056E742 /* LZCardView.swift */; };
+		A3BF5CA71ADE20AA0056E742 /* LZCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BF5CA61ADE20AA0056E742 /* LZCardView.swift */; };
+		A3BF5CA91ADE21D20056E742 /* LZCardItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BF5CA81ADE21D20056E742 /* LZCardItemView.swift */; };
 		A3BF5CAB1AE209770056E742 /* UIView+Animation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BF5CAA1AE209770056E742 /* UIView+Animation.swift */; };
 /* End PBXBuildFile section */
 
@@ -29,18 +31,20 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		A370F83E1AE31E84005977CF /* PageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageViewController.swift; sourceTree = "<group>"; };
+		A370F8461AE32239005977CF /* LZCardTransitionManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LZCardTransitionManager.swift; sourceTree = "<group>"; };
 		A3BF5C811ADE1E4A0056E742 /* CardTableView.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CardTableView.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A3BF5C851ADE1E4A0056E742 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A3BF5C861ADE1E4A0056E742 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		A3BF5C881ADE1E4A0056E742 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		A3BF5C881ADE1E4A0056E742 /* LZCardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LZCardViewController.swift; sourceTree = "<group>"; };
 		A3BF5C8B1ADE1E4A0056E742 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		A3BF5C8D1ADE1E4A0056E742 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		A3BF5C901ADE1E4A0056E742 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		A3BF5C961ADE1E4A0056E742 /* CardTableViewTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CardTableViewTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A3BF5C9B1ADE1E4A0056E742 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A3BF5C9C1ADE1E4A0056E742 /* CardTableViewTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardTableViewTests.swift; sourceTree = "<group>"; };
-		A3BF5CA61ADE20AA0056E742 /* LZCardTableView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LZCardTableView.swift; sourceTree = "<group>"; };
-		A3BF5CA81ADE21D20056E742 /* LZCardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LZCardView.swift; sourceTree = "<group>"; };
+		A3BF5CA61ADE20AA0056E742 /* LZCardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LZCardView.swift; sourceTree = "<group>"; };
+		A3BF5CA81ADE21D20056E742 /* LZCardItemView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LZCardItemView.swift; sourceTree = "<group>"; };
 		A3BF5CAA1AE209770056E742 /* UIView+Animation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Animation.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -84,9 +88,11 @@
 			isa = PBXGroup;
 			children = (
 				A3BF5C861ADE1E4A0056E742 /* AppDelegate.swift */,
-				A3BF5C881ADE1E4A0056E742 /* ViewController.swift */,
-				A3BF5CA61ADE20AA0056E742 /* LZCardTableView.swift */,
-				A3BF5CA81ADE21D20056E742 /* LZCardView.swift */,
+				A370F83E1AE31E84005977CF /* PageViewController.swift */,
+				A3BF5C881ADE1E4A0056E742 /* LZCardViewController.swift */,
+				A3BF5CA61ADE20AA0056E742 /* LZCardView.swift */,
+				A3BF5CA81ADE21D20056E742 /* LZCardItemView.swift */,
+				A370F8461AE32239005977CF /* LZCardTransitionManager.swift */,
 				A3BF5CAA1AE209770056E742 /* UIView+Animation.swift */,
 				A3BF5C8A1ADE1E4A0056E742 /* Main.storyboard */,
 				A3BF5C8D1ADE1E4A0056E742 /* Images.xcassets */,
@@ -221,10 +227,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A3BF5C891ADE1E4A0056E742 /* ViewController.swift in Sources */,
-				A3BF5CA71ADE20AA0056E742 /* LZCardTableView.swift in Sources */,
+				A3BF5C891ADE1E4A0056E742 /* LZCardViewController.swift in Sources */,
+				A3BF5CA71ADE20AA0056E742 /* LZCardView.swift in Sources */,
+				A370F8471AE32239005977CF /* LZCardTransitionManager.swift in Sources */,
 				A3BF5CAB1AE209770056E742 /* UIView+Animation.swift in Sources */,
-				A3BF5CA91ADE21D20056E742 /* LZCardView.swift in Sources */,
+				A370F83F1AE31E84005977CF /* PageViewController.swift in Sources */,
+				A3BF5CA91ADE21D20056E742 /* LZCardItemView.swift in Sources */,
 				A3BF5C871ADE1E4A0056E742 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
