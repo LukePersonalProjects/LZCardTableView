@@ -39,19 +39,31 @@ class LZCardViewController: UIViewController {
     }
   }
   
+  var images:[UIImage?] = [nil,nil]
   @IBAction func addPage(sender: AnyObject) {
-    tableView.addEmptyCard(animate: true)
+    images = [nil,nil,nil,nil,nil]
+    tableView.insertCardsAtIndexes([0,3,4], withCardAnimation: .Automatic) { () -> Void in
+      
+    }
   }
   @IBAction func unwindToCardView(segue: UIStoryboardSegue) {}
 }
 
+extension LZCardViewController: LZCardViewDataSource{
+  func numberOfCardsInCardView(cardView: LZCardView) -> Int {
+    return images.count
+  }
+  func cardView(cardView: LZCardView, imageForCardAtIndex index: Int) -> UIImage? {
+    return images[index]
+  }
+  func cardView(cardView: LZCardView, canDeleteCardAtIndex index: Int) -> Bool {
+    return index > 0
+  }
+  func cardView(cardView: LZCardView, commitDeletionAtIndex index: Int) {
+    images.removeAtIndex(index)
+  }
+}
 extension LZCardViewController: LZCardViewDelegate{
-  func numberOfCard() -> Int{
-    return 0
-  }
-  func imageForCardAtIndex(index:Int) -> UIImage?{
-    return nil
-  }
   func cardTableView(cardTableView: LZCardView, didSelectCardAtIndex index: Int) {
     self.performSegueWithIdentifier("Show Page", sender: self)
   }
