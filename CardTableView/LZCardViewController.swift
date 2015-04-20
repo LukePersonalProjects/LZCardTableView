@@ -39,11 +39,19 @@ class LZCardViewController: UIViewController {
     }
   }
   
-  var images:[UIImage?] = [nil,nil]
+  var images:[UIImage?] = []
+  var randomAnimation:LZCardAnimation{
+    let animations:[LZCardAnimation] = [.Pop,.Fade,.SlideLeft,.SlideRight]
+    return animations[Int(arc4random_uniform(7)) % animations.count]
+  }
   @IBAction func addPage(sender: AnyObject) {
-    images = [nil,nil,nil,nil,nil]
-    tableView.insertCardsAtIndexes([0,3,4], withCardAnimation: .Automatic) { () -> Void in
-      
+    images.append(nil)
+    tableView.insertCardsAtIndexes([images.count-1], withCardAnimation: randomAnimation) { () -> Void in }
+  }
+  @IBAction func deletePage(sender: AnyObject) {
+    if images.count > 0{
+      images.removeAtIndex(0)
+      tableView.deleteCardsAtIndexes([0], withCardAnimation: randomAnimation) { () -> Void in }
     }
   }
   @IBAction func unwindToCardView(segue: UIStoryboardSegue) {}

@@ -41,10 +41,21 @@
                                                 <action selector="addPage:" destination="BYZ-38-t0r" eventType="touchUpInside" id="igp-hn-HAp"/>
                                             </connections>
                                         </button>
+                                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Shy-Br-6VJ">
+                                            <rect key="frame" x="323" y="7" width="44" height="30"/>
+                                            <state key="normal" title="Delete">
+                                                <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                            </state>
+                                            <connections>
+                                                <action selector="deletePage:" destination="BYZ-38-t0r" eventType="touchUpInside" id="7wp-nP-qHi"/>
+                                            </connections>
+                                        </button>
                                     </subviews>
                                     <constraints>
                                         <constraint firstAttribute="bottom" secondItem="LNA-iL-5Wt" secondAttribute="bottom" id="Qas-ys-eGp"/>
                                         <constraint firstItem="LNA-iL-5Wt" firstAttribute="top" secondItem="zQZ-zX-3wN" secondAttribute="top" id="XzD-XG-pdp"/>
+                                        <constraint firstAttribute="centerY" secondItem="Shy-Br-6VJ" secondAttribute="centerY" id="hAY-15-GCg"/>
+                                        <constraint firstAttribute="trailing" secondItem="Shy-Br-6VJ" secondAttribute="trailing" constant="8" id="oER-Nr-LMR"/>
                                         <constraint firstAttribute="centerX" secondItem="LNA-iL-5Wt" secondAttribute="centerX" id="rfs-j9-0kY"/>
                                     </constraints>
                                 </view>

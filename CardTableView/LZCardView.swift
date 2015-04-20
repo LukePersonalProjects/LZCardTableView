@@ -20,7 +20,7 @@ import UIKit
 }
 
 public enum LZCardAnimation{
-  case Automatic, PopIn, SlideLeft, SlideRight, Fade, None
+  case Automatic, Pop, SlideLeft, SlideRight, Fade, None
 }
 
 public class LZCardView: UITableView {
@@ -103,19 +103,30 @@ public class LZCardView: UITableView {
         resetSize()
       }
       if withCardAnimation != .None{
-        for i in indexes{
-          resetCardAtIndex(i)
-          let card = cards[i]
-          card.translation3d = Point(y: 500)
-          card.applyTransform()
-          card.alpha = 0
-        }
-        
         // move existing card into their position
         UIView.animateWithDuration(0.2,animations:{
           self.resetAllExcept(indexes)
         })
-        // popIn Animation
+        
+        for i in indexes{
+          resetCardAtIndex(i)
+          let card = cards[i]
+          switch withCardAnimation{
+          case .Automatic, .Pop:
+            card.translation3d = Point(y: 500)
+            card.alpha = 0
+          case .Fade:
+            card.alpha = 0
+          case .SlideLeft:
+            card.translation3d = Point(x: -500)
+          case .SlideRight:
+            card.translation3d = Point(x: 500)
+          default:
+            break
+          }
+          card.applyTransform()
+        }
+        
         UIView.animateBounceWithDuration(0.5,animations:{
           self.resetAll(indexes: indexes)
         })
@@ -125,7 +136,56 @@ public class LZCardView: UITableView {
     }
   }
   public func deleteCardsAtIndexes(indexes:[Int], withCardAnimation:LZCardAnimation, completion:() -> Void = {}){
-    
+    if let dataSource = cardViewDataSource{
+      let numCards = dataSource.numberOfCardsInCardView(self)
+      if numCards != cards.count - indexes.count{
+        assertionFailure("Number of cards after delete must match")
+      }
+      var removedCards:[LZCardItemView] = []
+      for i in indexes{
+        removedCards.append(cards.removeAtIndex(i))
+      }
+      
+      if paning{
+        resetSize(moveUp: false)
+      }else{
+        resetSize()
+      }
+      if withCardAnimation != .None{
+        // move remaning card into their position
+        UIView.animateWithDuration(0.2,animations:{
+          self.resetAll()
+        })
+      
+        UIView.animateWithDuration(0.5, animations: {
+          for card in removedCards{
+            switch withCardAnimation{
+            case .Pop:
+              card.translation3d = Point(y: -500)
+              card.alpha = 0
+            case .Fade:
+              card.alpha = 0
+            case .Automatic, .SlideLeft:
+              card.translation3d = Point(x: -500)
+            case .SlideRight:
+              card.translation3d = Point(x: 500)
+            default:
+              break
+            }
+            card.applyTransform()
+          }
+        }, completion: { (completed) -> Void in
+          for card in removedCards{
+            card.removeFromSuperview()
+          }
+        })
+      }else{
+        for card in removedCards{
+          card.removeFromSuperview()
+        }
+        resetAll()
+      }
+    }
   }
   public func reloadCardsAtIndexes(indexes:[Int], withCardAnimation:LZCardAnimation, completion:() -> Void = {}){
     
