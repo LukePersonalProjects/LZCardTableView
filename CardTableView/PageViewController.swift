@@ -11,17 +11,17 @@ import UIKit
 
 class PageViewController: UIViewController {
   
-  override func viewDidLoad() {
-    super.viewDidLoad()
-    // Do any additional setup after loading the view.
+  @IBOutlet weak var countLabel: UILabel!
+  @IBOutlet weak var toolbar: UIToolbar!
+  @IBOutlet weak var mainView: UIView!
+  
+  var viewIndex = 0
+  
+  override func viewWillAppear(animated: Bool) {
+    countLabel.text = "\(viewIndex)"
   }
   
-  override func didReceiveMemoryWarning() {
-    super.didReceiveMemoryWarning()
-    // Dispose of any resources that can be recreated.
+  var thumbnail:UIImage{
+    return mainView.takeSnapshot()
   }
-  
-  override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-  }
-  
 }

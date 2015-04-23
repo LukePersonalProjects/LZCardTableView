@@ -19,8 +19,18 @@ import UIKit
   optional func cardView(cardView:LZCardView, commitDeletionAtIndex: Int)
 }
 
-public enum LZCardAnimation{
+public enum LZCardAnimation:Int{
   case Automatic, Pop, SlideLeft, SlideRight, Fade, None
+  var description:String{
+    switch self{
+    case .Automatic: return "Automatic"
+    case .Pop: return "Pop"
+    case .SlideLeft: return "SlideLeft"
+    case .SlideRight: return "SlideRight"
+    case .Fade: return "Fade"
+    case .None: return "None"
+    }
+  }
 }
 
 public class LZCardView: UITableView {
@@ -86,38 +96,116 @@ public class LZCardView: UITableView {
   
   
   // MARK: - Add Card
-  public func insertCardsAtIndexes(indexes:[Int], withCardAnimation:LZCardAnimation, completion:() -> Void = {}){
+  public func insertCardsAtIndexes(indexes:[Int], withCardAnimation:LZCardAnimation, completion:(() -> Void)? = nil){
     if let dataSource = cardViewDataSource{
       let numCards = dataSource.numberOfCardsInCardView(self)
       if numCards != indexes.count + cards.count{
         assertionFailure("Number of cards after insert must match")
       }
+
+      cancelActions()
+      
       for i in indexes{
         let image = dataSource.cardView?(self, imageForCardAtIndex: i)
         insertCard(newCardWithImage(image: image), atIndex: i)
       }
       
-      if paning{
-        resetSize(moveUp: false)
+      resetSize()
+      
+      // move existing card into their position
+      if withCardAnimation == .None{
+        resetAllExcept(indexes)
       }else{
-        resetSize()
-      }
-      if withCardAnimation != .None{
-        // move existing card into their position
         UIView.animateWithDuration(0.2,animations:{
           self.resetAllExcept(indexes)
         })
-        
-        for i in indexes{
-          resetCardAtIndex(i)
-          let card = cards[i]
-          switch withCardAnimation{
-          case .Automatic, .Pop:
-            card.translation3d = Point(y: 500)
+      }
+      runAnimation(withCardAnimation, forInsertedCardsAtIndexes: indexes, completion:completion)
+    }
+  }
+  public func deleteCardsAtIndexes(indexes:[Int], withCardAnimation:LZCardAnimation, completion:(() -> Void)? = nil){
+    if let dataSource = cardViewDataSource{
+      let numCards = dataSource.numberOfCardsInCardView(self)
+      if numCards != cards.count - indexes.count{
+        assertionFailure("Number of cards after delete must match")
+      }
+      cancelActions()
+      var removedCards:[LZCardItemView] = []
+      for i in indexes{
+        removedCards.append(cards.removeAtIndex(i))
+      }
+      
+      resetSize()
+      
+      // move remaning card into their position
+      if withCardAnimation == .None{
+        resetAll()
+      }else{
+        UIView.animateWithDuration(0.2, animations:{
+          self.resetAll()
+        })
+      }
+      runAnimation(withCardAnimation, forDeletedCards: removedCards, completion:completion)
+    }
+  }
+  private func cancelActions(){
+    if let panGR = panGR{
+      panGR.enabled = false
+      panGR.enabled = true
+    }else if let reorderingGR = reorderingGR{
+      reorderingGR.enabled = false
+      reorderingGR.enabled = true
+    }
+  }
+  private func runAnimation(animation:LZCardAnimation, forInsertedCardsAtIndexes indexes:[Int], completion:(() -> Void)?){
+    if animation == .None{
+      resetAll(indexes: indexes)
+      completion?()
+    }else{
+      for i in indexes{
+        resetCardAtIndex(i)
+        let card = cards[i]
+        switch animation{
+        case .Automatic, .Pop:
+          card.translation3d = Point(y: 500)
+          card.alpha = 0
+        case .Fade:
+          card.alpha = 0
+        case .SlideLeft:
+          card.translation3d = Point(x: 500)
+        case .SlideRight:
+          card.translation3d = Point(x: -500)
+        default:
+          break
+        }
+        card.applyTransform()
+      }
+      UIView.animateEaseInWithDuration(0.5,animations:{
+        self.resetAll(indexes: indexes)
+      }, completion:{
+        completion?()
+      })
+    }
+  }
+  private func runAnimation(animation:LZCardAnimation, forDeletedCards:[LZCardItemView], completion:(() -> Void)?){
+    func removeCardsFromSuperview() -> Void{
+      for card in forDeletedCards{
+        card.removeFromSuperview()
+      }
+      completion?()
+    }
+    if animation == .None{
+      removeCardsFromSuperview()
+    }else{
+      UIView.animateEaseInWithDuration(0.5, animations: {
+        for card in forDeletedCards{
+          switch animation{
+          case .Pop:
+            card.translation3d = Point(y: -500)
             card.alpha = 0
           case .Fade:
             card.alpha = 0
-          case .SlideLeft:
+          case .Automatic, .SlideLeft:
             card.translation3d = Point(x: -500)
           case .SlideRight:
             card.translation3d = Point(x: 500)
@@ -126,69 +214,35 @@ public class LZCardView: UITableView {
           }
           card.applyTransform()
         }
-        
-        UIView.animateBounceWithDuration(0.5,animations:{
-          self.resetAll(indexes: indexes)
-        })
-      }else{
-        resetAll()
-      }
+      }, completion: removeCardsFromSuperview)
     }
   }
-  public func deleteCardsAtIndexes(indexes:[Int], withCardAnimation:LZCardAnimation, completion:() -> Void = {}){
+  public func reloadCardsAtIndexes(indexes:[Int], withCardAnimation animation:LZCardAnimation, completion:(() -> Void)? = nil){
     if let dataSource = cardViewDataSource{
       let numCards = dataSource.numberOfCardsInCardView(self)
-      if numCards != cards.count - indexes.count{
-        assertionFailure("Number of cards after delete must match")
+      if numCards != cards.count{
+        assertionFailure("Number of cards after reload must match")
       }
+      if animation == .None{
+        for i in indexes{
+          let image = dataSource.cardView?(self, imageForCardAtIndex: i)
+          cards[i].image = image
+        }
+        return;
+      }
+      cancelActions()
       var removedCards:[LZCardItemView] = []
       for i in indexes{
         removedCards.append(cards.removeAtIndex(i))
+        let image = dataSource.cardView?(self, imageForCardAtIndex: i)
+        insertCard(newCardWithImage(image: image), atIndex: i)
       }
-      
-      if paning{
-        resetSize(moveUp: false)
-      }else{
-        resetSize()
-      }
-      if withCardAnimation != .None{
-        // move remaning card into their position
-        UIView.animateWithDuration(0.2,animations:{
-          self.resetAll()
-        })
-      
-        UIView.animateWithDuration(0.5, animations: {
-          for card in removedCards{
-            switch withCardAnimation{
-            case .Pop:
-              card.translation3d = Point(y: -500)
-              card.alpha = 0
-            case .Fade:
-              card.alpha = 0
-            case .Automatic, .SlideLeft:
-              card.translation3d = Point(x: -500)
-            case .SlideRight:
-              card.translation3d = Point(x: 500)
-            default:
-              break
-            }
-            card.applyTransform()
-          }
-        }, completion: { (completed) -> Void in
-          for card in removedCards{
-            card.removeFromSuperview()
-          }
-        })
-      }else{
-        for card in removedCards{
-          card.removeFromSuperview()
-        }
-        resetAll()
-      }
+      UIView.animateWithDuration(0.2,animations:{
+        self.resetAllExcept(indexes)
+      })
+      runAnimation(animation, forDeletedCards: removedCards, completion:nil)
+      runAnimation(animation, forInsertedCardsAtIndexes: indexes, completion:completion)
     }
-  }
-  public func reloadCardsAtIndexes(indexes:[Int], withCardAnimation:LZCardAnimation, completion:() -> Void = {}){
-    
   }
   private func newCardWithImage(image:UIImage? = nil) -> LZCardItemView{
     let card = LZCardItemView(frame: frame)
@@ -228,7 +282,7 @@ public class LZCardView: UITableView {
     let oldTop = contentInset.top
     listenToScroll = false
     let newTopInset = max(frame.size.height, CGFloat(cards.count)*cardSeperation)
-    contentInset = UIEdgeInsets(top: newTopInset, left: 0, bottom: 0, right: 0);
+    contentInset = UIEdgeInsets(top: newTopInset, left: contentInset.left, bottom: contentInset.bottom, right: contentInset.right);
     if !moveUp{
       let newTop = contentInset.top
       contentOffset.y -= newTop - oldTop
@@ -254,16 +308,6 @@ public class LZCardView: UITableView {
     }
   }
   func resetCardAtIndex(i:Int){
-    if paning && i == panCardIndex!{
-      let panCard = cards[panCardIndex!]
-      let tempPanProgess = panProgress
-      panProgress = 0
-      panCard.defaultTranslation = translationForCard(CGFloat(panCardIndex!))
-      panCard.defaultRotation = cardRotation
-      panProgress = tempPanProgess
-      panCard.applyTransform()
-      return;
-    }
     let card = cards[i]
     let offset = contentInset.top + contentOffset.y
     let rotationOffset:CGFloat = offset < 0 ? offset / 40 : 0
@@ -272,15 +316,7 @@ public class LZCardView: UITableView {
     card.translation = Point()
     card.translation3d = Point()
     card.defaultRotation = cardRotation
-    if paning{
-      if i < panCardIndex{
-        card.defaultTranslation = translationForCard(CGFloat(i))
-      }else if i > panCardIndex{
-        card.defaultTranslation = translationForCard(CGFloat(i) - panProgress)
-      }
-    }else{
-      card.defaultTranslation = translationForCard(CGFloat(i))
-    }
+    card.defaultTranslation = translationForCard(CGFloat(i))
     card.darkenLayer.opacity = 0
     card.alpha = 1
     card.applyTransform()
@@ -291,7 +327,7 @@ public class LZCardView: UITableView {
     if cards.count == 0{
       return -20
     }
-    return -50 + 40 / (CGFloat(cards.count) - panProgress)
+    return -50 + 30 / (CGFloat(cards.count) - panProgress)
   }
   var cardSeperation:CGFloat{
     if cards.count == 0{
@@ -308,7 +344,8 @@ public class LZCardView: UITableView {
   
   // MARK: - touch
   override public func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
-    if let card = hitTest((touches.first as! UITouch).locationInView(self), withEvent: event) as? LZCardItemView{
+    if let card = hitTest((touches.first as! UITouch).locationInView(self), withEvent: event) as? LZCardItemView
+      where !paning && !reordering{
       card.xRotation = 2
       card.translation3d = Point(z:-20)
       UIView.animateEaseInWithDuration(0.2, animations: {
@@ -437,6 +474,10 @@ public class LZCardView: UITableView {
       UIView.animateEaseOutWithDuration(0.5, animations:{
         self.resetAll()
       })
+    }else if sender.state == .Cancelled{
+      reorderScrollSpeed = 0
+      reorderingInitialLocation = nil
+      reorderingGR = nil
     }
   }
   
@@ -449,6 +490,7 @@ public class LZCardView: UITableView {
     return panInitialLocation != nil
   }
   var panCardIndex:Int?
+  var panGR:UIPanGestureRecognizer?
   
   func pan(sender:UIPanGestureRecognizer){
     let panCard = sender.view as! LZCardItemView
@@ -460,7 +502,18 @@ public class LZCardView: UITableView {
       let panAdjustedDx = panLocation.x > 0 || !panCardCanBeDeleted ? panLocation.x/3 : panLocation.x
       panProgress = panCardCanBeDeleted ? min(1, max(0, -panAdjustedDx/frame.size.width)) : 0
       panCard.translation3d = Point(x: panAdjustedDx)
-      resetAll()
+      panCard.applyTransform()
+      for i in 0..<cards.count{
+        if i == panCardIndex{
+          continue
+        }else if i < panCardIndex{
+          cards[i].defaultTranslation = translationForCard(CGFloat(i))
+        }else if i > panCardIndex{
+          cards[i].defaultTranslation = translationForCard(CGFloat(i) - panProgress)
+        }
+        cards[i].defaultRotation = cardRotation
+        cards[i].applyTransform()
+      }
     }else if sender.state == .Ended{
       let current = sender.locationInView(self)
       var panLocation = CGPoint(x: current.x - panInitialLocation!.x, y: current.y - panInitialLocation!.y)
@@ -479,12 +532,18 @@ public class LZCardView: UITableView {
         })
       }
       panInitialLocation = nil
+      panGR = nil
       panCardCanBeDeleted = false
       panProgress = 0
       resetSize()
       UIView.animateEaseOutWithDuration(0.5, animations:{
         self.resetAll()
       })
+    }else if sender.state == .Cancelled{
+      panInitialLocation = nil
+      panGR = nil
+      panCardCanBeDeleted = false
+      panProgress = 0
     }
   }
   
@@ -492,15 +551,15 @@ public class LZCardView: UITableView {
   // MARK: - open & close card
   func tap(tapGR:UIGestureRecognizer){
     if let tappedCard = tapGR.view as? LZCardItemView, let cardIndex = find(self.cards, tappedCard){
-      selectedCard = tappedCard
       cardViewDelegate?.cardTableView?(self, didSelectCardAtIndex: cardIndex)
     }
   }
   
   var lastOpenedTopOffset:CGFloat?
-  public var selectedCard:LZCardItemView?
+  public var openedCard:LZCardItemView?
   public func openCard(card:LZCardItemView, duration:NSTimeInterval, completion:() -> Void){
     if let cardIndex = find(cards, card){
+      openedCard = card
       listenToScroll = false
       UIView.animateEaseOutWithDuration(duration, animations: {
         for i in 0..<self.cards.count{
@@ -520,11 +579,40 @@ public class LZCardView: UITableView {
     }
   }
   
+  public func openNewCard(duration:NSTimeInterval, completion:() -> Void) -> LZCardItemView{
+    let cardIndex = cards.count
+    let image = cardViewDataSource?.cardView?(self, imageForCardAtIndex: cardIndex)
+    let card = newCardWithImage(image: image)
+    openedCard = card
+    insertCard(card, atIndex: cardIndex)
+    card.defaultRotation = -50
+    card.defaultTranslation = Point(x:0, y:frame.height+contentOffset.y+contentInset.top, z:-100)
+    card.applyTransform()
+    resetSize()
+    listenToScroll = false
+    UIView.animateEaseOutWithDuration(duration, animations: {
+      for i in 0..<self.cards.count{
+        if i < cardIndex{
+          self.cards[i].translation = Point(y:-self.frame.height)
+          self.cards[i].applyTransform()
+        }else if i > cardIndex{
+          self.cards[i].translation = Point(y:self.frame.height)
+          self.cards[i].applyTransform()
+        }
+      }
+      card.layer.transform = CATransform3DIdentity
+      card.gradientLayer.opacity = 0
+      self.lastOpenedTopOffset = self.contentOffset.y
+      self.contentOffset.y = -self.frame.height
+      }, completion: completion)
+    return card
+  }
+  
   public func closeCard(card:LZCardItemView, duration:NSTimeInterval, completion:() -> Void){
     if let cardIndex = find(cards, card){
       listenToScroll = false
-      if selectedCard == nil || lastOpenedTopOffset == nil || card != selectedCard{
-        selectedCard = card
+      if openedCard == nil || lastOpenedTopOffset == nil || card != openedCard{
+        openedCard = card
         listenToScroll = false
         for i in 0..<self.cards.count{
           if i < cardIndex{
@@ -545,7 +633,7 @@ public class LZCardView: UITableView {
         card.gradientLayer.opacity = 1.0
         self.contentOffset.y = self.lastOpenedTopOffset!
       }, completion: completion)
-      selectedCard = nil
+      openedCard = nil
       lastOpenedTopOffset = nil
     }
   }
@@ -561,6 +649,7 @@ extension LZCardView: UIGestureRecognizerDelegate{
         let velocity = gr.velocityInView(self)
         if abs(velocity.x) > abs(velocity.y){
           panCardIndex = find(cards, card)
+          panGR = gr
           panInitialLocation = gr.locationInView(self)
           panCardCanBeDeleted = cardViewDataSource?.cardView?(self, canDeleteCardAtIndex: panCardIndex!) ?? false
           return true
