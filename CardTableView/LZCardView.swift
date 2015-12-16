@@ -17,6 +17,7 @@ import UIKit
   optional func cardView(cardView:LZCardView, imageForCardAtIndex index:Int) -> UIImage?
   optional func cardView(cardView:LZCardView, canDeleteCardAtIndex: Int) -> Bool
   optional func cardView(cardView:LZCardView, commitDeletionAtIndex: Int)
+  optional func cardView(cardView:LZCardView, sizeForCardAtIndex index:Int) -> CGSize
 }
 
 public enum LZCardAnimation:Int{
@@ -49,8 +50,8 @@ public class LZCardView: UITableView {
   override public var contentOffset:CGPoint{
     didSet{
       if listenToScroll{
-        for card in cards{
-          card.frame = frame
+        for (index, card) in cards.enumerate(){
+          card.frame = getFrameForCard(index)
         }
         resetAll()
       }
@@ -63,7 +64,7 @@ public class LZCardView: UITableView {
       let numCards = dataSource.numberOfCardsInCardView(self)
       if numCards > cards.count{
         for i in cards.count..<numCards{
-          insertCard(newCardWithImage(image: nil), atIndex: i)
+          insertCard(newCardWithImage(getFrameForCard(i)), atIndex: i)
         }
       }else{
         for i in numCards..<cards.count{
@@ -78,13 +79,21 @@ public class LZCardView: UITableView {
     }
   }
   
+  func getFrameForCard(index:Int) -> CGRect{
+    var frame = self.frame
+    if let dataSource = cardViewDataSource{
+      frame.size = dataSource.cardView?(self, sizeForCardAtIndex: index) ?? bounds.size
+    }
+    return frame
+  }
+  
   // MARK: - Initializers
   override public init(frame: CGRect, style: UITableViewStyle){
     super.init(frame: frame, style: style)
     setup()
   }
 
-  required public init(coder aDecoder: NSCoder) {
+  required public init?(coder aDecoder: NSCoder) {
     super.init(coder: aDecoder)
     setup()
   }
@@ -107,7 +116,7 @@ public class LZCardView: UITableView {
       
       for i in indexes{
         let image = dataSource.cardView?(self, imageForCardAtIndex: i)
-        insertCard(newCardWithImage(image: image), atIndex: i)
+        insertCard(newCardWithImage(getFrameForCard(i), image:image), atIndex: i)
       }
       
       resetSize()
@@ -159,7 +168,7 @@ public class LZCardView: UITableView {
   }
   private func runAnimation(animation:LZCardAnimation, forInsertedCardsAtIndexes indexes:[Int], completion:(() -> Void)?){
     if animation == .None{
-      resetAll(indexes: indexes)
+      resetAll(indexes)
       completion?()
     }else{
       for i in indexes{
@@ -181,7 +190,7 @@ public class LZCardView: UITableView {
         card.applyTransform()
       }
       UIView.animateEaseInWithDuration(0.5,animations:{
-        self.resetAll(indexes: indexes)
+        self.resetAll(indexes)
       }, completion:{
         completion?()
       })
@@ -221,7 +230,7 @@ public class LZCardView: UITableView {
     if let dataSource = cardViewDataSource{
       let numCards = dataSource.numberOfCardsInCardView(self)
       if numCards != cards.count{
-        assertionFailure("Number of cards after reload must match")
+        assertionFailure("Number of cards after reload must match \(numCards) \(cards.count)")
       }
       if animation == .None{
         for i in indexes{
@@ -235,7 +244,7 @@ public class LZCardView: UITableView {
       for i in indexes{
         removedCards.append(cards.removeAtIndex(i))
         let image = dataSource.cardView?(self, imageForCardAtIndex: i)
-        insertCard(newCardWithImage(image: image), atIndex: i)
+        insertCard(newCardWithImage(getFrameForCard(i), image:image), atIndex: i)
       }
       UIView.animateWithDuration(0.2,animations:{
         self.resetAllExcept(indexes)
@@ -244,10 +253,9 @@ public class LZCardView: UITableView {
       runAnimation(animation, forInsertedCardsAtIndexes: indexes, completion:completion)
     }
   }
-  private func newCardWithImage(image:UIImage? = nil) -> LZCardItemView{
+  private func newCardWithImage(frame:CGRect, image:UIImage? = nil) -> LZCardItemView{
     let card = LZCardItemView(frame: frame)
     card.image = image
-    card.backgroundColor = .whiteColor()
     
     let tapGR = UITapGestureRecognizer(target: self, action: "tap:")
     tapGR.delegate = self
@@ -281,7 +289,7 @@ public class LZCardView: UITableView {
   func resetSize(moveUp:Bool = true){
     let oldTop = contentInset.top
     listenToScroll = false
-    let newTopInset = max(frame.size.height, CGFloat(cards.count)*cardSeperation)
+    let newTopInset = max(frame.size.height, CGFloat(cards.count)*cardSeperation+50)
     contentInset = UIEdgeInsets(top: newTopInset, left: contentInset.left, bottom: contentInset.bottom, right: contentInset.right);
     if !moveUp{
       let newTop = contentInset.top
@@ -302,7 +310,7 @@ public class LZCardView: UITableView {
   }
   func resetAllExcept(indexes: [Int]){
     for i in 0..<cards.count{
-      if !contains(indexes, i){
+      if !indexes.contains(i){
         resetCardAtIndex(i)
       }
     }
@@ -317,23 +325,23 @@ public class LZCardView: UITableView {
     card.translation3d = Point()
     card.defaultRotation = cardRotation
     card.defaultTranslation = translationForCard(CGFloat(i))
-    card.darkenLayer.opacity = 0
     card.alpha = 1
     card.applyTransform()
   }
   
   // MARK: - data calculation
+  var reorderCardOpacity:CGFloat = 0.8
   var cardRotation:CGFloat{
     if cards.count == 0{
-      return -20
+      return -10
     }
-    return -50 + 30 / (CGFloat(cards.count) - panProgress)
+    return -30 + 30 / (CGFloat(cards.count) - panProgress)
   }
   var cardSeperation:CGFloat{
     if cards.count == 0{
       return 600
     }
-    return 100 + 500 / (CGFloat(cards.count) - panProgress)
+    return 100 + 100 / (CGFloat(cards.count) - panProgress)
   }
   func translationForCard(cardIndex:CGFloat) -> Point{
     let topOffset:CGFloat = 60
@@ -343,8 +351,8 @@ public class LZCardView: UITableView {
   }
   
   // MARK: - touch
-  override public func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
-    if let card = hitTest((touches.first as! UITouch).locationInView(self), withEvent: event) as? LZCardItemView
+  override public func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    if let card = hitTest(touches.first!.locationInView(self), withEvent: event) as? LZCardItemView
       where !paning && !reordering{
       card.xRotation = 2
       card.translation3d = Point(z:-20)
@@ -405,7 +413,7 @@ public class LZCardView: UITableView {
   func swapIfNeeded(){
     let reorderingLocation = reorderingGR?.locationInView(self)
     let yOffset = reorderingLocation!.y - reorderingInitialLocation!.y
-    let cardIndex = find(cards, reorderingCard)!
+    let cardIndex = cards.indexOf(reorderingCard)!
     var swappedCard:LZCardItemView? = nil
     if cardIndex != cards.count - 1 && yOffset + reorderingCard.defaultTranslation.y > cards[cardIndex+1].defaultTranslation.y - cardSeperation/2{
       //swap with next
@@ -423,7 +431,7 @@ public class LZCardView: UITableView {
       let index2 = (backgroundView!.subviews as NSArray).indexOfObject(swappedCard)
       backgroundView!.exchangeSubviewAtIndex(index1, withSubviewAtIndex: index2)
       UIView.animateEaseOutWithDuration(0.2, animations: {
-        swappedCard.translation3d = Point(y: 400)
+        swappedCard.translation3d = Point(y: 300)
         swappedCard.alpha = 0.4
         swappedCard.applyTransform()
         }, completion: { (completed) -> Void in
@@ -433,7 +441,7 @@ public class LZCardView: UITableView {
           }
           swappedCard.applyTransform()
           UIView.animateBounceWithDuration(0.6){
-            swappedCard.alpha = 1.0
+            swappedCard.alpha = self.reorderCardOpacity
             swappedCard.translation3d = Point(x: 0, y: 50, z:-30)
             swappedCard.applyTransform()
           }
@@ -451,7 +459,7 @@ public class LZCardView: UITableView {
         for card in self.cards{
           if card != self.reorderingCard{
             card.translation3d = Point(x: 0, y: 50, z:-30)
-            card.darkenLayer.opacity = 1
+            card.alpha = self.reorderCardOpacity
             card.xRotation = 2
             card.applyTransform()
           }
@@ -498,7 +506,7 @@ public class LZCardView: UITableView {
       panProgress = 0
     }else if sender.state == .Changed{
       let current = sender.locationInView(self)
-      var panLocation = CGPoint(x: current.x - panInitialLocation!.x, y: current.y - panInitialLocation!.y)
+      let panLocation = CGPoint(x: current.x - panInitialLocation!.x, y: current.y - panInitialLocation!.y)
       let panAdjustedDx = panLocation.x > 0 || !panCardCanBeDeleted ? panLocation.x/3 : panLocation.x
       panProgress = panCardCanBeDeleted ? min(1, max(0, -panAdjustedDx/frame.size.width)) : 0
       panCard.translation3d = Point(x: panAdjustedDx)
@@ -516,10 +524,10 @@ public class LZCardView: UITableView {
       }
     }else if sender.state == .Ended{
       let current = sender.locationInView(self)
-      var panLocation = CGPoint(x: current.x - panInitialLocation!.x, y: current.y - panInitialLocation!.y)
+      let panLocation = CGPoint(x: current.x - panInitialLocation!.x, y: current.y - panInitialLocation!.y)
       let v = sender.velocityInView(self)
       if v.x < 0 && panLocation.x < 0 && panCardCanBeDeleted{
-        let cardIndex = find(cards, panCard)!
+        let cardIndex = cards.indexOf(panCard)!
         cardViewDataSource?.cardView?(self, commitDeletionAtIndex: cardIndex)
         cards.removeAtIndex(cardIndex)
         let pointsToMove = frame.width * 2
@@ -550,7 +558,7 @@ public class LZCardView: UITableView {
   
   // MARK: - open & close card
   func tap(tapGR:UIGestureRecognizer){
-    if let tappedCard = tapGR.view as? LZCardItemView, let cardIndex = find(self.cards, tappedCard){
+    if let tappedCard = tapGR.view as? LZCardItemView, let cardIndex = self.cards.indexOf(tappedCard){
       cardViewDelegate?.cardTableView?(self, didSelectCardAtIndex: cardIndex)
     }
   }
@@ -558,7 +566,7 @@ public class LZCardView: UITableView {
   var lastOpenedTopOffset:CGFloat?
   public var openedCard:LZCardItemView?
   public func openCard(card:LZCardItemView, duration:NSTimeInterval, completion:() -> Void){
-    if let cardIndex = find(cards, card){
+    if let cardIndex = cards.indexOf(card){
       openedCard = card
       listenToScroll = false
       UIView.animateEaseOutWithDuration(duration, animations: {
@@ -582,7 +590,7 @@ public class LZCardView: UITableView {
   public func openNewCard(duration:NSTimeInterval, completion:() -> Void) -> LZCardItemView{
     let cardIndex = cards.count
     let image = cardViewDataSource?.cardView?(self, imageForCardAtIndex: cardIndex)
-    let card = newCardWithImage(image: image)
+    let card = newCardWithImage(getFrameForCard(cardIndex), image:image)
     openedCard = card
     insertCard(card, atIndex: cardIndex)
     card.defaultRotation = -50
@@ -609,7 +617,7 @@ public class LZCardView: UITableView {
   }
   
   public func closeCard(card:LZCardItemView, duration:NSTimeInterval, completion:() -> Void){
-    if let cardIndex = find(cards, card){
+    if let cardIndex = cards.indexOf(card){
       listenToScroll = false
       if openedCard == nil || lastOpenedTopOffset == nil || card != openedCard{
         openedCard = card
@@ -648,7 +656,7 @@ extension LZCardView: UIGestureRecognizerDelegate{
       if let gr = gestureRecognizer as? UIPanGestureRecognizer{
         let velocity = gr.velocityInView(self)
         if abs(velocity.x) > abs(velocity.y){
-          panCardIndex = find(cards, card)
+          panCardIndex = cards.indexOf(card)
           panGR = gr
           panInitialLocation = gr.locationInView(self)
           panCardCanBeDeleted = cardViewDataSource?.cardView?(self, canDeleteCardAtIndex: panCardIndex!) ?? false

@@ -14,7 +14,7 @@ import UIKit
 // view controller seemlessly
 class LZCardInstantPresentTransition: NSObject, UIViewControllerAnimatedTransitioning{
   func animateTransition(transitionContext: UIViewControllerContextTransitioning) {
-    let container = transitionContext.containerView()
+    let container = transitionContext.containerView()!
     let cardVC = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey) as! LZCardViewController
     let toVC = transitionContext.viewControllerForKey(UITransitionContextToViewControllerKey)!
     container.backgroundColor = toVC.view.backgroundColor
@@ -36,7 +36,7 @@ class LZCardInstantPresentTransition: NSObject, UIViewControllerAnimatedTransiti
     }
   }
   
-  func transitionDuration(transitionContext: UIViewControllerContextTransitioning) -> NSTimeInterval {
+  func transitionDuration(transitionContext: UIViewControllerContextTransitioning?) -> NSTimeInterval {
     return 0.0
   }
 }
@@ -44,7 +44,7 @@ class LZCardInstantPresentTransition: NSObject, UIViewControllerAnimatedTransiti
 
 class LZCardPresentTransition: NSObject, UIViewControllerAnimatedTransitioning{
   func animateTransition(transitionContext: UIViewControllerContextTransitioning) {
-    let container = transitionContext.containerView()
+    let container = transitionContext.containerView()!
     let cardVC = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey) as! LZCardViewController
     let toVC = transitionContext.viewControllerForKey(UITransitionContextToViewControllerKey) as! PageViewController
     
@@ -60,7 +60,7 @@ class LZCardPresentTransition: NSObject, UIViewControllerAnimatedTransitioning{
       imageView.image = image
       func completion(){
         // cleanup, this function is run after the animation completes
-        toVC.mainView.alpha = 1
+        toVC.view.alpha = 1
         imageView.removeFromSuperview()
         transitionContext.completeTransition(true)
       }
@@ -77,24 +77,22 @@ class LZCardPresentTransition: NSObject, UIViewControllerAnimatedTransitioning{
       // add imageview to the card and fade it in
       card.addSubview(imageView)
       imageView.alpha = 0
-      toVC.toolbar.alpha = 0
-      toVC.mainView.alpha = 0
+      toVC.view.alpha = 0
       UIView.animateWithDuration(duration, animations: {
         imageView.alpha = 1
-        toVC.toolbar.alpha = 1
       })
     }else{
       assertionFailure("Must select a card")
     }
   }
   
-  func transitionDuration(transitionContext: UIViewControllerContextTransitioning) -> NSTimeInterval {
+  func transitionDuration(transitionContext: UIViewControllerContextTransitioning?) -> NSTimeInterval {
     return 0.4
   }
 }
 class LZCardDismissTransition: NSObject, UIViewControllerAnimatedTransitioning{
   func animateTransition(transitionContext: UIViewControllerContextTransitioning) {
-    let container = transitionContext.containerView()
+    let container = transitionContext.containerView()!
     let fromVC = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey) as! PageViewController
     let cardVC = transitionContext.viewControllerForKey(UITransitionContextToViewControllerKey) as! LZCardViewController
     
@@ -104,11 +102,7 @@ class LZCardDismissTransition: NSObject, UIViewControllerAnimatedTransitioning{
     let duration = self.transitionDuration(transitionContext)
     if let index = cardVC.selectedCardIndex{
       // animate toolbar fade out
-      fromVC.toolbar.alpha = 1
-      fromVC.mainView.alpha = 0
-      UIView.animateWithDuration(duration/2, animations: {
-        fromVC.toolbar.alpha = 0
-      })
+      fromVC.view.alpha = 0
       
       // animate card close
       let card = cardVC.tableView.cards[index]
@@ -120,7 +114,7 @@ class LZCardDismissTransition: NSObject, UIViewControllerAnimatedTransitioning{
     }
   }
   
-  func transitionDuration(transitionContext: UIViewControllerContextTransitioning) -> NSTimeInterval {
+  func transitionDuration(transitionContext: UIViewControllerContextTransitioning?) -> NSTimeInterval {
     return 0.7
   }
 }

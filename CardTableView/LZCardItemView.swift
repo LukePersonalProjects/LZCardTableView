@@ -30,24 +30,14 @@ public class Point{
     self.z = z
   }
 }
-public class LZCardItemView: UIView {
-  public var imageView:UIImageView
+
+public class CardItemView:UIView{
   public var defaultTranslation = Point()
   public var translation = Point()
   public var translation3d = Point()
   public var xRotation:CGFloat = 0
   public var defaultRotation:CGFloat = 0
-  public var darkenLayer:CALayer = CALayer()
-  public var gradientLayer = CAGradientLayer()
   
-  public var image:UIImage?{
-    get{
-      return imageView.image
-    }
-    set{
-      imageView.image = newValue
-    }
-  }
   public func applyTransform(){
     var transform = CATransform3DIdentity
     transform.m34 = CGFloat(1.0 / -1000)
@@ -57,36 +47,69 @@ public class LZCardItemView: UIView {
     self.layer.transform = transform
   }
   
+  override public init(frame: CGRect) {
+    super.init(frame: frame)
+    layer.anchorPoint = CGPoint(x: 0.5, y: 0)
+  }
+  
+  required public init?(coder aDecoder: NSCoder) {
+    super.init(coder: aDecoder)
+  }
+}
+
+
+public class LZCardItemView: CardItemView {
+  public var imageView:UIImageView
+  public var gradientLayer = CAGradientLayer()
+  public var maskLayer = CALayer()
+  
+  public var image:UIImage?{
+    get{
+      return imageView.image
+    }
+    set{
+      imageView.image = newValue
+    }
+  }
+  
   override public func layoutSubviews() {
     super.layoutSubviews()
-    darkenLayer.frame = bounds
     gradientLayer.frame = bounds
     imageView.frame = bounds
+    maskLayer.frame = bounds
   }
   
   override public init(frame: CGRect) {
     imageView = UIImageView(frame: frame)
     super.init(frame: frame)
-    layer.anchorPoint = CGPoint(x: 0.5, y: 0)
-    self.frame = frame
-    addSubview(imageView)
-    gradientLayer.colors = [
-      UIColor(white: 0.4, alpha: 0.0).CGColor,
-      UIColor(white: 0.4, alpha: 0.5).CGColor,
-      UIColor(white: 0.4, alpha: 0.8).CGColor,
-    ]
-    gradientLayer.startPoint = CGPoint(x:0.5, y:0.0)
-    gradientLayer.endPoint = CGPoint(x:0.5, y:1.0)
-    gradientLayer.frame = frame
-    layer.addSublayer(gradientLayer)
+    imageView.layer.cornerRadius = 18
+    imageView.layer.masksToBounds = true
+//    layer.shadowColor = UIColor.blackColor().CGColor
+//    layer.shadowOpacity = 1.0
+//    layer.shadowRadius = 100
     
-    darkenLayer.backgroundColor = UIColor(white: 0.3, alpha: 0.4).CGColor
-    darkenLayer.opacity = 0
-    darkenLayer.frame = frame
-    layer.addSublayer(darkenLayer)
+    backgroundColor = UIColor.clearColor()
+    opaque = false
+    
+    maskLayer.contents = UIImage(named: "mask")?.CGImage;
+    layer.mask = maskLayer
+    
+    imageView.backgroundColor = UIColor.clearColor()
+    addSubview(imageView)
+//    gradientLayer.colors = [
+//      UIColor(red: 288/255, green: 82/255, blue: 123/255, alpha: 0).CGColor,
+//      UIColor(red: 288/255, green: 82/255, blue: 123/255, alpha: 0.1).CGColor,
+//      UIColor(red: 288/255, green: 82/255, blue: 123/255, alpha: 1).CGColor,
+//      UIColor(red: 288/255, green: 82/255, blue: 123/255, alpha: 1).CGColor,
+//    ]
+//    gradientLayer.startPoint = CGPoint(x:0.5, y:0.0)
+//    gradientLayer.endPoint = CGPoint(x:0.5, y:1.0)
+//    gradientLayer.frame = frame
+//    layer.addSublayer(gradientLayer)
+    
   }
 
-  required public init(coder aDecoder: NSCoder) {
+  required public init?(coder aDecoder: NSCoder) {
     imageView = UIImageView(frame: CGRectZero)
     super.init(coder: aDecoder)
   }

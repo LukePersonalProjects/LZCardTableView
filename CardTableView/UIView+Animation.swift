@@ -31,7 +31,7 @@ extension UIView {
     UIView.animateBounceWithDuration(duration, animations:animations){}
   }
   class func animateBounceWithDuration(duration:NSTimeInterval, animations:() -> Void, completion:(() -> Void)?) {
-    UIView.animateWithDuration(duration, delay: 0.0, usingSpringWithDamping: damping, initialSpringVelocity: initialV, options: nil, animations: animations){(completed) -> Void in
+    UIView.animateWithDuration(duration, delay: 0.0, usingSpringWithDamping: damping, initialSpringVelocity: initialV, options: [], animations: animations){(completed) -> Void in
       completion?()
     }
   }

@@ -9,19 +9,26 @@
 import UIKit
 
 
-class PageViewController: UIViewController {
-  
-  @IBOutlet weak var countLabel: UILabel!
-  @IBOutlet weak var toolbar: UIToolbar!
-  @IBOutlet weak var mainView: UIView!
-  
-  var viewIndex = 0
+class PageViewController: CameraViewController {
   
   override func viewWillAppear(animated: Bool) {
-    countLabel.text = "\(viewIndex)"
+    super.viewWillAppear(animated)
   }
   
-  var thumbnail:UIImage{
-    return mainView.takeSnapshot()
+  @IBAction func shoot(sender: AnyObject) {
+    print("shoot")
+    super.takeShot { (image) -> Void in
+      self.thumbnail = UIImage(CIImage: image)
+      self.performSegueWithIdentifier("edit", sender: self);
+    }
+  }
+  
+  var thumbnail:UIImage = UIImage(named: "c2")!
+  
+  override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    if segue.identifier == "edit"{
+      let vc = segue.destinationViewController as! EditViewController
+      vc.image = self.thumbnail
+    }
   }
 }

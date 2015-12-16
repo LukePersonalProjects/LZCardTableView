@@ -18,6 +18,10 @@
 		A3BF5CA71ADE20AA0056E742 /* LZCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BF5CA61ADE20AA0056E742 /* LZCardView.swift */; };
 		A3BF5CA91ADE21D20056E742 /* LZCardItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BF5CA81ADE21D20056E742 /* LZCardItemView.swift */; };
 		A3BF5CAB1AE209770056E742 /* UIView+Animation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3BF5CAA1AE209770056E742 /* UIView+Animation.swift */; };
+		B151A90A1C03DF480094D78A /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B151A9081C03DF480094D78A /* CameraViewController.swift */; };
+		B151A90D1C03F3700094D78A /* OverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B151A90C1C03F3700094D78A /* OverlayView.swift */; };
+		B1704F721C065E430079B1FB /* ALCameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1704F711C065E430079B1FB /* ALCameraView.swift */; };
+		B1704F741C06711F0079B1FB /* EditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1704F731C06711F0079B1FB /* EditViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +50,10 @@
 		A3BF5CA61ADE20AA0056E742 /* LZCardView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LZCardView.swift; sourceTree = "<group>"; };
 		A3BF5CA81ADE21D20056E742 /* LZCardItemView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LZCardItemView.swift; sourceTree = "<group>"; };
 		A3BF5CAA1AE209770056E742 /* UIView+Animation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Animation.swift"; sourceTree = "<group>"; };
+		B151A9081C03DF480094D78A /* CameraViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
+		B151A90C1C03F3700094D78A /* OverlayView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OverlayView.swift; sourceTree = "<group>"; };
+		B1704F711C065E430079B1FB /* ALCameraView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ALCameraView.swift; sourceTree = "<group>"; };
+		B1704F731C06711F0079B1FB /* EditViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EditViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,7 +102,10 @@
 				A3BF5CA81ADE21D20056E742 /* LZCardItemView.swift */,
 				A370F8461AE32239005977CF /* LZCardTransitionManager.swift */,
 				A3BF5CAA1AE209770056E742 /* UIView+Animation.swift */,
+				B151A9081C03DF480094D78A /* CameraViewController.swift */,
+				B1704F701C065E310079B1FB /* Views */,
 				A3BF5C8A1ADE1E4A0056E742 /* Main.storyboard */,
+				B1704F731C06711F0079B1FB /* EditViewController.swift */,
 				A3BF5C8D1ADE1E4A0056E742 /* Images.xcassets */,
 				A3BF5C8F1ADE1E4A0056E742 /* LaunchScreen.xib */,
 				A3BF5C841ADE1E4A0056E742 /* Supporting Files */,
@@ -125,6 +136,15 @@
 				A3BF5C9B1ADE1E4A0056E742 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		B1704F701C065E310079B1FB /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				B1704F711C065E430079B1FB /* ALCameraView.swift */,
+				B151A90C1C03F3700094D78A /* OverlayView.swift */,
+			);
+			name = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -171,6 +191,8 @@
 		A3BF5C791ADE1E4A0056E742 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftMigration = 0710;
+				LastSwiftUpdateCheck = 0710;
 				LastUpgradeCheck = 0630;
 				ORGANIZATIONNAME = SoySauce;
 				TargetAttributes = {
@@ -229,11 +251,15 @@
 			files = (
 				A3BF5C891ADE1E4A0056E742 /* LZCardViewController.swift in Sources */,
 				A3BF5CA71ADE20AA0056E742 /* LZCardView.swift in Sources */,
+				B1704F721C065E430079B1FB /* ALCameraView.swift in Sources */,
 				A370F8471AE32239005977CF /* LZCardTransitionManager.swift in Sources */,
 				A3BF5CAB1AE209770056E742 /* UIView+Animation.swift in Sources */,
 				A370F83F1AE31E84005977CF /* PageViewController.swift in Sources */,
 				A3BF5CA91ADE21D20056E742 /* LZCardItemView.swift in Sources */,
+				B151A90A1C03DF480094D78A /* CameraViewController.swift in Sources */,
 				A3BF5C871ADE1E4A0056E742 /* AppDelegate.swift in Sources */,
+				B1704F741C06711F0079B1FB /* EditViewController.swift in Sources */,
+				B151A90D1C03F3700094D78A /* OverlayView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

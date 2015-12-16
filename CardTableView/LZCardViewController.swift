@@ -28,7 +28,7 @@ class LZCardViewController: UIViewController {
   var presentTransition = LZCardPresentTransition()
   var dismissTransition = LZCardDismissTransition()
   
-  var thumbnails:[UIImage?] = []
+  var thumbnails:[UIImage?] = [UIImage(named: "c1"),UIImage(named: "c2"),UIImage(named: "c2"),UIImage(named: "c2"),UIImage(named: "c3")]
   
   var childViewController:PageViewController?
   
@@ -55,11 +55,13 @@ class LZCardViewController: UIViewController {
     }
   }
   
+  override func preferredStatusBarStyle() -> UIStatusBarStyle {
+    return .LightContent
+  }
   
   override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
     if let vc = segue.destinationViewController as? PageViewController{
       childViewController = vc
-      vc.viewIndex = selectedCardIndex!
       vc.transitioningDelegate = self
     }
   }
@@ -75,16 +77,16 @@ class LZCardViewController: UIViewController {
     // Hide the view when launching the app,
     // Since we want to go into child view controller directly
     // This ensures there is no glitch or sudden flash
-    view.hidden = firstBoot
+//    view.hidden = firstBoot
     super.viewWillAppear(animated)
   }
   override func viewDidAppear(animated: Bool) {
     super.viewDidAppear(animated)
     if firstBoot{
       // directly go into a child controller.
-      selectedCardIndex = 0
-      thumbnails.append(nil)
-      performSegueWithIdentifier("Show Page", sender: self)
+//      selectedCardIndex = 0
+//      thumbnails.append(nil)
+//      performSegueWithIdentifier("Show Page", sender: self)
       firstBoot = false
     }
   }
@@ -122,8 +124,8 @@ class LZCardViewController: UIViewController {
         }
         indexes.append(index)
       }
-      indexes.sort(<)
-      println("Inserting \(indexes)")
+      indexes.sortInPlace(<)
+      print("Inserting \(indexes)")
       self.tableView.insertCardsAtIndexes(indexes, withCardAnimation: selectedAnimation, completion: nil)
     case .Reload:
       let cards = UInt32(thumbnails.count)
@@ -131,12 +133,12 @@ class LZCardViewController: UIViewController {
       for i in 0..<Int(arc4random_uniform(cards+1)){
         let max = UInt32(thumbnails.count)
         let index = Int(arc4random_uniform(max))
-        if !contains(indexes,index){
+        if !indexes.contains(index){
           indexes.append(index)
         }
       }
-      indexes.sort(<)
-      println("Reloading \(indexes)")
+      indexes.sortInPlace(<)
+      print("Reloading \(indexes)")
       self.tableView.reloadCardsAtIndexes(indexes, withCardAnimation: selectedAnimation, completion: nil)
     case .Delete:
       let cards = UInt32(thumbnails.count)
@@ -144,15 +146,15 @@ class LZCardViewController: UIViewController {
       for i in 0..<Int(arc4random_uniform(cards+1)){
         let max = UInt32(thumbnails.count-1)
         let index = Int(arc4random_uniform(max))
-        if !contains(indexes,index){
+        if !indexes.contains(index){
           indexes.append(index)
         }
       }
-      indexes.sort(>)
+      indexes.sortInPlace(>)
       for i in indexes{
         thumbnails.removeAtIndex(i)
       }
-      println("Deleting \(indexes)")
+      print("Deleting \(indexes)")
       self.tableView.deleteCardsAtIndexes(indexes, withCardAnimation: selectedAnimation, completion: nil)
     }
   }
@@ -180,6 +182,9 @@ extension LZCardViewController: LZCardViewDataSource{
   }
   func cardView(cardView: LZCardView, commitDeletionAtIndex index: Int) {
     thumbnails.removeAtIndex(index)
+  }
+  func cardView(cardView: LZCardView, sizeForCardAtIndex index: Int) -> CGSize {
+    return CGSizeMake(cardView.frame.width, 250)
   }
 }
 
@@ -216,8 +221,8 @@ extension LZCardViewController: UITableViewDataSource{
     return 50
   }
   func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-    let cell = tableView.dequeueReusableCellWithIdentifier("Action Cell", forIndexPath: indexPath) as! UITableViewCell
-    var bgColorView = UIView()
+    let cell = tableView.dequeueReusableCellWithIdentifier("Action Cell", forIndexPath: indexPath) 
+    let bgColorView = UIView()
     bgColorView.backgroundColor = UIColor(white: 1, alpha: 0.5)
     cell.selectedBackgroundView = bgColorView
     if indexPath.section == 0{
